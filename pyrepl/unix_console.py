@@ -30,6 +30,11 @@ from pyrepl import unix_eventqueue
 class InvalidTerminal(RuntimeError):
     pass
 
+try:
+    unicode
+except NameError:
+    unicode = str
+
 _error = (termios.error, curses.error, InvalidTerminal)
 
 # there are arguments for changing this to "refresh"
@@ -41,8 +46,8 @@ TIOCGWINSZ = getattr(termios, "TIOCGWINSZ", None)
 def _my_getstr(cap, optional=0):
     r = curses.tigetstr(cap)
     if not optional and r is None:
-        raise InvalidTerminal, \
-              "terminal doesn't have the required '%s' capability"%cap
+        raise InvalidTerminal(
+              "terminal doesn't have the required '%s' capability"%cap)
     return r
 
 # at this point, can we say: AAAAAAAAAAAAAAAAAAAAAARGH!
@@ -58,7 +63,7 @@ for r in [0, 110, 115200, 1200, 134, 150, 1800, 19200, 200, 230400,
 
 del r, maybe_add_baudrate
 
-delayprog = re.compile("\\$<([0-9]+)((?:/|\\*){0,2})>")
+delayprog = re.compile(b"\\$<([0-9]+)((?:/|\\*){0,2})>")
 
 try:
     poll = select.poll
@@ -131,14 +136,14 @@ class UnixConsole(Console):
         elif self._cub1 and self._cuf1:
             self.__move_x = self.__move_x_cub1_cuf1
         else:
-            raise RuntimeError, "insufficient terminal (horizontal)"
+            raise RuntimeError("insufficient terminal (horizontal)")
 
         if self._cuu and self._cud:
             self.__move_y = self.__move_y_cuu_cud
         elif self._cuu1 and self._cud1:
             self.__move_y = self.__move_y_cuu1_cud1
         else:
-            raise RuntimeError, "insufficient terminal (vertical)"
+            raise RuntimeError("insufficient terminal (vertical)")
 
         if self._dch1:
             self.dch1 = self._dch1
@@ -157,15 +162,15 @@ class UnixConsole(Console):
         self.__move = self.__move_short
 
         self.event_queue = unix_eventqueue.EventQueue(self.input_fd)
-        self.partial_char = ''
+        self.partial_char = b''
         self.cursor_visible = 1
 
     def change_encoding(self, encoding):
         self.encoding = encoding
     
-    def refresh(self, screen, (cx, cy)):
+    def refresh(self, screen, c_xy):
         # this function is still too long (over 90 lines)
-
+        cx, cy = c_xy
         if not self.__gone_tall:
             while len(self.screen) < min(len(screen), self.height):
                 self.__hide_cursor()
@@ -303,6 +308,7 @@ class UnixConsole(Console):
         self.__buffer.append((text, 0))
 
     def __write_code(self, fmt, *args):
+
         self.__buffer.append((curses.tparm(fmt, *args), 1))
 
     def __maybe_write_code(self, fmt, *args):
@@ -405,15 +411,15 @@ class UnixConsole(Console):
     def push_char(self, char):
         self.partial_char += char
         try:
-            c = unicode(self.partial_char, self.encoding)
-        except UnicodeError, e:
+            c = self.partial_char.decode(self.encoding)
+        except UnicodeError as e:
             if len(e.args) > 4 and \
                    e.args[4] == 'unexpected end of data':
                 pass
             else:
                 raise
         else:
-            self.partial_char = ''
+            self.partial_char = b''
             self.event_queue.push(c)
         
     def get_event(self, block=1):
@@ -421,7 +427,7 @@ class UnixConsole(Console):
             while 1: # All hail Unix!
                 try:
                     self.push_char(os.read(self.input_fd, 1))
-                except (IOError, OSError), err:
+                except (IOError, OSError) as err:
                     if err.errno == errno.EINTR:
                         if not self.event_queue.empty():
                             return self.event_queue.get()
