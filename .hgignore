@@ -1,0 +1,4 @@
+dist/
+build/
+\.tox/
+.*\.egg-info
