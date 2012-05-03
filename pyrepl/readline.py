@@ -423,9 +423,14 @@ def _setup():
 
     else:
         # this is not really what readline.c does.  Better than nothing I guess
-        import __builtin__
-        _old_raw_input = __builtin__.raw_input
-        __builtin__.raw_input = _wrapper.raw_input
+        if sys.version_info < (3,):
+            import __builtin__
+            _old_raw_input = __builtin__.raw_input
+            __builtin__.raw_input = _wrapper.raw_input
+        else:
+            import builtins
+            _old_raw_input = builtins.input
+            builtins.input = _wrapper.raw_input
 
 _old_raw_input = None
 _setup()
