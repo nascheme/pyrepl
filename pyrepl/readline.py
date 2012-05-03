@@ -229,7 +229,7 @@ class _ReadlineWrapper(object):
         self.config.completer_delims = dict.fromkeys(string)
 
     def get_completer_delims(self):
-        chars = self.config.completer_delims.keys()
+        chars = list(self.config.completer_delims.keys())
         chars.sort()
         return ''.join(chars)
 
