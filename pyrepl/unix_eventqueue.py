@@ -93,7 +93,7 @@ class EncodedQueue(object):
     def flush_buf(self):
         old = self.buf
         self.buf = bytearray()
-        return old
+        return bytes(old)
 
     def insert(self, event):
         trace('added event {event}', event=event)
