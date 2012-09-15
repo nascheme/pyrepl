@@ -28,23 +28,21 @@ try:
 except NameError:
     unicode = str
     unichr = chr
-    basestring = bytes, str
 
 
 def _make_unctrl_map():
     uc_map = {}
-    for c in map(unichr, range(256)):
-        if unicodedata.category(c)[0] != 'C':
-            uc_map[c] = c
-    for i in range(32):
-        c = unichr(i)
-        uc_map[c] = '^' + unichr(ord('A') + i - 1)
-    uc_map[b'\t'] = '    '  # display TABs as 4 characters
-    uc_map[b'\177'] = unicode('^?')
     for i in range(256):
         c = unichr(i)
-        if c not in uc_map:
-            uc_map[c] = unicode('\\%03o') % i
+        if unicodedata.category(c)[0] != 'C':
+            uc_map[i] = c
+    for i in range(32):
+        uc_map[i] = '^' + unichr(ord('A') + i - 1)
+    uc_map[ord(b'\t')] = '    '  # display TABs as 4 characters
+    uc_map[ord(b'\177')] = unicode('^?')
+    for i in range(256):
+        if i not in uc_map:
+            uc_map[i] = unicode('\\%03o') % i
     return uc_map
 
 
@@ -53,7 +51,7 @@ def _my_unctrl(c, u=_make_unctrl_map()):
         return u[c]
     else:
         if unicodedata.category(c).startswith('C'):
-            return b'\u%04x' % ord(c)
+            return br'\u%04x' % ord(c)
         else:
             return c
 
@@ -521,12 +519,11 @@ feeling more loquacious than I am now."""
 
     def do_cmd(self, cmd):
         #print cmd
-        if isinstance(cmd[0], basestring):
-            #XXX: unify to text
+        if isinstance(cmd[0], str):
             cmd = self.commands.get(cmd[0],
                                     commands.invalid_command)(self, *cmd)
         elif isinstance(cmd[0], type):
-            cmd = cmd[0](self, cmd)
+            cmd = cmd[0](self, *cmd)
         else:
             return  # nothing to do
 
@@ -617,7 +614,7 @@ feeling more loquacious than I am now."""
     def get_buffer(self, encoding=None):
         if encoding is None:
             encoding = self.console.encoding
-        return unicode('').join(self.buffer).encode(self.console.encoding)
+        return self.get_unicode().encode(encoding)
 
     def get_unicode(self):
         """Return the current buffer as a unicode string."""
