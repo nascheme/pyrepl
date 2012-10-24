@@ -25,7 +25,7 @@ import imp
 
 try:
     # Forces import of the builtin module.  Seems necessary with PyPy.
-    _curses = imp.init_builtin('_minimal_curses2')
+    _curses = imp.init_builtin('_minimal_curses')
     if not _curses:
         raise ImportError
     setupterm = _curses.setupterm
@@ -33,4 +33,5 @@ try:
     tparm = _curses.tparm
     error = _curses.error
 except ImportError:
+    raise
     from ._minimal_curses import setupterm, tigetstr, tparm, error
