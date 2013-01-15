@@ -32,5 +32,4 @@ try:
     tparm = _curses.tparm
     error = _curses.error
 except ImportError:
-    raise
     from ._minimal_curses import setupterm, tigetstr, tparm, error
