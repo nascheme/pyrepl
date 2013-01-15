@@ -7,7 +7,7 @@ from pyrepl import curses
 def test_simple():
     q = EncodedQueue({}, 'utf-8')
 
-    a = u'\u1234'
+    a = b'\u1234'.decode('unicode-escape')
     b = a.encode('utf-8')
     for c in b:
         q.push(c)
