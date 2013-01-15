@@ -1,5 +1,7 @@
 from pyrepl.readline import _ReadlineWrapper
-import os, pty
+import os
+import pty
+
 
 def test_raw_input():
     master, slave = pty.openpty()
