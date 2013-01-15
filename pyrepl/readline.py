@@ -32,6 +32,10 @@ from pyrepl.historical_reader import HistoricalReader
 from pyrepl.completing_reader import CompletingReader
 from pyrepl.unix_console import UnixConsole, _error
 
+try:
+    unicode
+except NameError:
+    unicode = str
 
 ENCODING = sys.getfilesystemencoding() or 'latin1'     # XXX review
 
@@ -226,12 +230,14 @@ class _ReadlineWrapper(object):
         self.config.completer_delims = dict.fromkeys(string)
 
     def get_completer_delims(self):
-        chars = self.config.completer_delims.keys()
+        chars = list(self.config.completer_delims.keys())
         chars.sort()
         return ''.join(chars)
 
     def _histline(self, line):
         line = line.rstrip('\n')
+        if isinstance(line, unicode):
+            return line # on py3k
         try:
             return unicode(line, ENCODING)
         except UnicodeDecodeError:   # bah, silently fall back...
@@ -271,7 +277,9 @@ class _ReadlineWrapper(object):
         history = self.get_reader().get_trimmed_history(maxlength)
         f = open(os.path.expanduser(filename), 'w')
         for entry in history:
-            if isinstance(entry, unicode):
+            # if we are on py3k, we don't need to encode strings before
+            # writing it to a file
+            if isinstance(entry, unicode) and sys.version_info < (3,):
                 try:
                     entry = entry.encode(ENCODING)
                 except UnicodeEncodeError:   # bah, silently fall back...
@@ -419,9 +427,14 @@ def _setup():
 
     else:
         # this is not really what readline.c does.  Better than nothing I guess
-        import __builtin__
-        _old_raw_input = __builtin__.raw_input
-        __builtin__.raw_input = _wrapper.raw_input
+        if sys.version_info < (3,):
+            import __builtin__
+            _old_raw_input = __builtin__.raw_input
+            __builtin__.raw_input = _wrapper.raw_input
+        else:
+            import builtins
+            _old_raw_input = builtins.input
+            builtins.input = _wrapper.raw_input
 
 _old_raw_input = None
 _setup()

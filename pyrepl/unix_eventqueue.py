@@ -93,14 +93,14 @@ class EncodedQueue(object):
     def flush_buf(self):
         old = self.buf
         self.buf = bytearray()
-        return old
+        return bytes(old)
 
     def insert(self, event):
         trace('added event {event}', event=event)
         self.events.append(event)
 
     def push(self, char):
-        self.buf.append(char)
+        self.buf.append(ord(char))
         if char in self.k:
             if self.k is self.ck:
                 #sanity check, buffer is empty when a special key comes

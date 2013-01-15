@@ -460,7 +460,7 @@ class UnixConsole(Console):
                 return int(os.environ["LINES"]), int(os.environ["COLUMNS"])
             except KeyError:
                 height, width = struct.unpack(
-                    "hhhh", ioctl(self.input_fd, TIOCGWINSZ, "\000"*8))[0:2]
+                    "hhhh", ioctl(self.input_fd, TIOCGWINSZ, b"\000"*8))[0:2]
                 if not height: return 25, 80
                 return height, width
     else:
@@ -522,7 +522,7 @@ class UnixConsole(Console):
 
     if FIONREAD:
         def getpending(self):
-            e = Event('key', '', '')
+            e = Event('key', '', b'')
 
             while not self.event_queue.empty():
                 e2 = self.event_queue.get()
@@ -530,14 +530,15 @@ class UnixConsole(Console):
                 e.raw += e.raw
                 
             amount = struct.unpack(
-                "i", ioctl(self.input_fd, FIONREAD, "\0\0\0\0"))[0]
-            raw = unicode(os.read(self.input_fd, amount), self.encoding, 'replace')
-            e.data += raw
+                "i", ioctl(self.input_fd, FIONREAD, b"\0\0\0\0"))[0]
+            raw = os.read(self.input_fd, amount)
+            data = unicode(raw, self.encoding, 'replace')
+            e.data += data
             e.raw += raw
             return e
     else:
         def getpending(self):
-            e = Event('key', '', '')
+            e = Event('key', '', b'')
 
             while not self.event_queue.empty():
                 e2 = self.event_queue.get()
@@ -545,8 +546,9 @@ class UnixConsole(Console):
                 e.raw += e.raw
                 
             amount = 10000
-            raw = unicode(os.read(self.input_fd, amount), self.encoding, 'replace')
-            e.data += raw
+            raw = os.read(self.input_fd, amount)
+            data = unicode(raw, self.encoding, 'replace')
+            e.data += data
             e.raw += raw
             return e
 
