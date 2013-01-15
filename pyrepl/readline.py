@@ -185,7 +185,7 @@ class _ReadlineWrapper(object):
 
     def __init__(self):
         self.f_in = os.dup(0)
-        self.f_ut = os.dup(1)
+        self.f_out = os.dup(1)
 
     def get_reader(self):
         if self.reader is None:
@@ -241,7 +241,7 @@ class _ReadlineWrapper(object):
         try:
             return unicode(line, ENCODING)
         except UnicodeDecodeError:   # bah, silently fall back...
-            return unicode(line, 'utf-8')
+            return unicode(line, 'utf-8', 'replace')
 
     def get_history_length(self):
         return self.saved_history_length
