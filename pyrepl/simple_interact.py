@@ -33,6 +33,7 @@ def check():     # returns False if there is a problem initializing the state
         return False
     return True
 
+
 def run_multiline_interactive_console(mainmodule=None):
     import code
     import __main__
@@ -41,7 +42,10 @@ def run_multiline_interactive_console(mainmodule=None):
 
     def more_lines(unicodetext):
         # ooh, look at the hack:
-        src = "#coding:utf-8\n"+unicodetext.encode('utf-8')
+        if sys.version_info < (3,):
+            src = "#coding:utf-8\n"+unicodetext.encode('utf-8')
+        else:
+            src = unicodetext
         try:
             code = console.compile(src, '<input>', 'single')
         except (OverflowError, SyntaxError, ValueError):

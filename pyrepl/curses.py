@@ -20,4 +20,16 @@
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-from ._minimal_curses import setupterm, tigetstr, tparm, error
+import imp
+
+try:
+    # Forces import of the builtin module.  Seems necessary with PyPy.
+    _curses = imp.init_builtin('_minimal_curses')
+    if not _curses:
+        raise ImportError
+    setupterm = _curses.setupterm
+    tigetstr = _curses.tigetstr
+    tparm = _curses.tparm
+    error = _curses.error
+except ImportError:
+    from ._minimal_curses import setupterm, tigetstr, tparm, error
