@@ -25,13 +25,17 @@ from .infrastructure import EA, TestReader, read_spec
 
 import pytest
 
+
 class HistoricalTestReader(HistoricalReader, TestReader):
     pass
 
+
 @pytest.mark.xfail(reason='event missing', run=False)
 def test_transpose_at_start():
-    read_spec([( 'transpose', [EA, '']),
-               ( 'accept',    [''])])
+    read_spec([
+        ('transpose', [EA, '']),
+        ('accept',    [''])])
+
 
 def test_cmd_instantiation_crash():
     spec = [
@@ -40,3 +44,29 @@ def test_cmd_instantiation_crash():
         ('accept', [''])
     ]
     read_spec(spec, HistoricalTestReader)
+
+
+def test_signal_failure(monkeypatch):
+    import os
+    import pty
+    import signal
+    from pyrepl.unix_console import UnixConsole
+
+    def failing_signal(a, b):
+        raise ValueError
+
+    def really_failing_signal(a, b):
+        raise AssertionError
+
+    mfd, sfd = pty.openpty()
+    try:
+        c = UnixConsole(sfd, sfd)
+        c.prepare()
+        c.restore()
+        monkeypatch.setattr(signal, 'signal', failing_signal)
+        c.prepare()
+        monkeypatch.setattr(signal, 'signal', really_failing_signal)
+        c.restore()
+    finally:
+        os.close(mfd)
+        os.close(sfd)
