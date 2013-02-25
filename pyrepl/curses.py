@@ -19,5 +19,5 @@
 # CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-
+__all__ = ['setupterm', 'tigetstr', 'tparm', 'error']
 from ._minimal_curses import setupterm, tigetstr, tparm, error
