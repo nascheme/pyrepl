@@ -55,7 +55,7 @@ def left_align(s, maxlen):
         # too bad, we remove the color
         return stripped[:maxlen]
     padding = maxlen - len(stripped)
-    return s + ' '*padding
+    return s + ' ' * padding
 
 
 def build_menu(cons, wordlist, start, use_brackets, sort_in_column):
@@ -67,7 +67,7 @@ def build_menu(cons, wordlist, start, use_brackets, sort_in_column):
         padding = 2
     maxlen = min(max(map(real_len, wordlist)), cons.width - padding)
     cols = cons.width / (maxlen + padding)
-    rows = (len(wordlist) - 1)/cols + 1
+    rows = (len(wordlist) - 1) / cols + 1
 
     if sort_in_column:
         # sort_in_column=False (default)     sort_in_column=True
@@ -77,8 +77,8 @@ def build_menu(cons, wordlist, start, use_brackets, sort_in_column):
         #
         # "fill" the table with empty words, so we always have the same amout
         # of rows for each column
-        missing = cols*rows - len(wordlist)
-        wordlist = wordlist + ['']*missing
+        missing = cols * rows - len(wordlist)
+        wordlist = wordlist + [''] * missing
         indexes = [(i % cols) * rows + i // cols for i in range(len(wordlist))]
         wordlist = [wordlist[i] for i in indexes]
     menu = []
@@ -238,7 +238,7 @@ class CompletingReader(Reader):
         if self.cmpltn_menu_vis:
             ly = self.lxy[1]
             screen[ly:ly] = self.cmpltn_menu
-            self.screeninfo[ly:ly] = [(0, [])]*len(self.cmpltn_menu)
+            self.screeninfo[ly:ly] = [(0, [])] * len(self.cmpltn_menu)
             self.cxy = self.cxy[0], self.cxy[1] + len(self.cmpltn_menu)
         return screen
 
@@ -259,7 +259,7 @@ class CompletingReader(Reader):
         p = self.pos - 1
         while p >= 0 and st.get(b[p], SW) == SW:
             p -= 1
-        return ''.join(b[p+1:self.pos])
+        return ''.join(b[p + 1:self.pos])
 
     def get_completions(self, stem):
         return []
