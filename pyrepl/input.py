@@ -40,8 +40,10 @@ from collections import deque
 class InputTranslator(object):
     def push(self, evt):
         pass
+
     def get(self):
         pass
+
     def empty(self):
         pass
 
