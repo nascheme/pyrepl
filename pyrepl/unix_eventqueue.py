@@ -65,11 +65,11 @@ _keynames.update(('f%d' % i, 'kf%d' % i) for i in range(1, 21))
 #
 CTRL_ARROW_KEYCODE = {
     # for xterm, gnome-terminal, xfce terminal, etc.
-    '\033[1;5D': 'ctrl left',
-    '\033[1;5C': 'ctrl right',
+    b'\033[1;5D': 'ctrl left',
+    b'\033[1;5C': 'ctrl right',
     # for rxvt
-    '\033Od': 'ctrl left',
-    '\033Oc': 'ctrl right',
+    b'\033Od': 'ctrl left',
+    b'\033Oc': 'ctrl right',
 }
 
 def general_keycodes():
