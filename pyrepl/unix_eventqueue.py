@@ -133,7 +133,7 @@ class EncodedQueue(object):
                 self.insert(Event('key', k, self.flush_buf()))
                 self.k = self.ck
 
-        elif self.buf and self.buf[0] == 033: # 033 == escape
+        elif self.buf and self.buf[0] == 0o33: # 0o33 == escape
             # escape sequence not recognized by our keymap: propagate it
             # outside so that i can be recognized as an M-... key (see also
             # the docstring in keymap.py, in particular the line \\E.
