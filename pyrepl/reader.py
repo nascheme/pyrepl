@@ -236,7 +236,7 @@ feeling more loquacious than I am now."""
         self.ps1 = "->> "
         self.ps2 = "/>> "
         self.ps3 = "|.. "
-        self.ps4 = "\__ "
+        self.ps4 = "\\__ "
         self.kill_ring = []
         self.arg = None
         self.finished = 0
@@ -629,7 +629,7 @@ def test():
     reader.ps1 = "**> "
     reader.ps2 = "/*> "
     reader.ps3 = "|*> "
-    reader.ps4 = "\*> "
+    reader.ps4 = "\\*> "
     while reader.readline():
         pass
 
