@@ -93,6 +93,9 @@ def saver(reader=reader):
         pass
 
 class PythonicReader(CompletingReader, HistoricalReader):
+
+    _module_list_ready = False
+
     def collect_keymap(self):
         return super(PythonicReader, self).collect_keymap() + (
             (r'\n', 'maybe-accept'),
@@ -397,7 +400,6 @@ def main(use_pygame_console=0, interactmethod=default_interactmethod, print_bann
             mainmod = sys.modules['__main__']
 
         rc = ReaderConsole(con, mainmod.__dict__)
-        rc.reader._module_list_ready = False
         rc.run_user_init_file()
         getattr(rc, interactmethod)()
     finally:
