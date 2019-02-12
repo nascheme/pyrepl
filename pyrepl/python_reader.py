@@ -27,7 +27,7 @@ from pyrepl.historical_reader import HistoricalReader
 from pyrepl import completing_reader, reader
 from pyrepl import commands, completer
 from pyrepl import module_lister
-import imp, sys, os, re, code, traceback
+import types, sys, os, re, code, traceback
 import atexit, warnings
 
 try:
@@ -36,7 +36,7 @@ except:
     unicode = str
 
 try:
-    imp.find_module("twisted")
+    import twisted
 except ImportError:
     default_interactmethod = "interact"
 else:
@@ -391,7 +391,7 @@ def main(use_pygame_console=0, interactmethod=default_interactmethod, print_bann
         sys.path.insert(0, os.getcwd())
 
         if clear_main and __name__ != '__main__':
-            mainmod = imp.new_module('__main__')
+            mainmod = types.ModuleType('__main__')
             sys.modules['__main__'] = mainmod
         else:
             mainmod = sys.modules['__main__']
