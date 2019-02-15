@@ -370,18 +370,22 @@ class invalid_command(Command):
 class qIHelp(Command):
     def do(self):
         r = self.reader
-        r.insert((bytes(self.event) + r.console.getpending().data) * r.get_arg())
+        r.insert((self.event + r.console.getpending().data) * r.get_arg())
         r.pop_input_trans()
 
 from pyrepl import input
 
 class QITrans(object):
+    def __init__(self, encoding):
+        self.encoding = encoding
     def push(self, evt):
         self.evt = evt
     def get(self):
-        return ('qIHelp', self.evt.raw)
+        s = self.evt.raw
+        s = s.decode(self.encoding)
+        return ('qIHelp', s)
 
 class quoted_insert(Command):
     kills_digit_arg = 0
     def do(self):
-        self.reader.push_input_trans(QITrans())
+        self.reader.push_input_trans(QITrans(self.reader.console.encoding))
